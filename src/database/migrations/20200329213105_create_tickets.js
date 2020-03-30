@@ -8,6 +8,11 @@ exports.up = function(knex) {
         table.string('status').notNullable();
         table.string('severity').notNullable();
         table.string('type').notNullable();
+        table.string('project_id').notNullable();
+        table.string('member_id').notNullable();
+
+        table.foreign('project_id').references('id').inTable('projects');
+        table.foreign('member_id').references('id').inTable('members');
       })
 };
 
