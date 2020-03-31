@@ -1,5 +1,6 @@
 #Local DB files
 ./src/database/database.sqlite
+.database.sqlite
 
 # Logs
 logs
