@@ -1,7 +1,9 @@
 const connection = require('../database/connection')
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const VerifyToken = require('../utils/VerifyToken')
 const generateUniqueId = require('../utils/GenerateUniqueId')
+
+const jwt = require('jsonwebtoken')
 
 module.exports = {
     async createUser(req, res) {
@@ -33,32 +35,32 @@ module.exports = {
     async deleteUser(req, res) {
         try {
             const { id } = req.params;
-            const userToken = req.headers.token
+            const token = await VerifyToken(req.headers.token)
 
-            if (id.length != 8)
-                return res.status(400).json({ error: 'Invalid user id.' })
+            if (token.isValid) {
+                const userTokenId = token.DecodedToken.userId
 
-            const user = await connection('users')
-                .where('id', id)
-                .select('id')
-                .first()
 
-            if (user === undefined) {
-                return res.status(404).json({ error: 'User not found.' })
-            }
+                if (id.length != 8)
+                    return res.status(400).json({ error: 'Invalid user id.' })
 
-            jwt.verify(userToken, process.env.TOKEN_KEY, async (err, decoded) => {
-                if (err)
-                    return res.status(401).json({ error: 'Invalid token.' })
-                if (decoded) {
-                    if (decoded.userId == id) {
-                        await connection('users').where('id', decoded.userId).delete()
-                        return res.status(204).send()
-                    }
-                    else
-                        return res.status(401).json({ error: 'Operation not permitted.' })
+                const user = await connection('users')
+                    .where('id', id)
+                    .select('id')
+                    .first()
+
+                if (user === undefined)
+                    return res.status(404).json({ error: 'User not found.' })
+
+                if (userTokenId === id) {
+                    await connection('users').where('id', id).delete()
+                    return res.status(204).send()
                 }
-            })
+                else
+                    return res.status(401).json({ error: 'Operation not permitted.' })
+            }
+            else
+                return res.status(400).json(token.error)
         }
         catch (err) {
             console.log(err)
