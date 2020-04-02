@@ -1,5 +1,5 @@
 const express = require('express')
-const TicketController = require('./controllers/TicketsController')
+const MembersController = require('./controllers/MembersController')
 const UsersController = require('./controllers/UsersController')
 const LoginController = require('./controllers/LoginController')
 const RolesController = require('./controllers/RolesController')
@@ -24,7 +24,11 @@ routers.post('/login', LoginController.loginUser)
 routers.get('/roles', RolesController.listRoles)
 routers.post('/roles', RolesController.createRole)
 
-routers.get('/project', ProjectController.listProjects)
+routers.get('/project', ProjectController.listMyProjects)
 routers.post('/project', ProjectController.createProject)
+
+routers.post('/member/:projectId', MembersController.addMemberToProject)
+routers.get('/member/:projectId', MembersController.listMemberOfProject)
+
 
 module.exports = routers

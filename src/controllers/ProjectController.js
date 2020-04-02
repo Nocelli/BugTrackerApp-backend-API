@@ -43,22 +43,48 @@ module.exports = {
     },
 
     //this function will be removed
-    async listProjects(req, res){
-        try{
+    async listProjects(req, res) {
+        try {
             const projects = await connection('projects')
-            .join('members', {'project_id': 'projects.id'})
-            .join('users', { 'users.id' : 'members.user_id'})
-            .join('roles', { 'roles.id' : 'members.role_id'})
-            .where('roles.id', '1')
-            .select(
-                'projects.*',
-                knex.raw(`users.name as "Dono"`),
-                knex.raw(`users.id as "Dono-ID"`)
-            )
-            
+                .join('members', { 'project_id': 'projects.id' })
+                .join('users', { 'users.id': 'members.user_id' })
+                .join('roles', { 'roles.id': 'members.role_id' })
+                .where('roles.id', '1')
+                .select(
+                    'projects.*',
+                    knex.raw(`users.name as "Dono"`),
+                    knex.raw(`users.id as "Dono-ID"`)
+                )
+
             return res.json(projects)
         }
-        catch(err){
+        catch (err) {
+            console.log(err)
+            return res.status(500).json(err)
+        }
+    },
+
+    async listMyProjects(req, res) {
+        try {
+
+            const token = await VerifyToken(req.headers.token)
+            if (token.isValid) {
+                const ownerId = token.DecodedToken.userId
+
+                const projects = await connection('projects')
+                    .join('members', { 'project_id': 'projects.id' })
+                    .join('users', { 'users.id': 'members.user_id' })
+                    .join('roles', { 'roles.id': 'members.role_id' })
+                    .where('roles.id', '1')
+                    .where('users.id', ownerId)
+                    .select('projects.*')
+
+                return res.json(projects)
+            }
+            else
+                return res.status(401).json(token.error)
+        }
+        catch (err) {
             console.log(err)
             return res.status(500).json(err)
         }
