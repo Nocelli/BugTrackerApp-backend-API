@@ -24,6 +24,7 @@ routers.post('/login', LoginController.loginUser)
 routers.get('/roles', RolesController.listRoles)
 routers.post('/roles', RolesController.createRole)
 
+routers.get('/project', ProjectController.listProjects)
 routers.post('/project', ProjectController.createProject)
 
 module.exports = routers

@@ -3,8 +3,6 @@ const bcrypt = require('bcrypt')
 const VerifyToken = require('../utils/VerifyToken')
 const generateUniqueId = require('../utils/GenerateUniqueId')
 
-const jwt = require('jsonwebtoken')
-
 module.exports = {
     async createUser(req, res) {
         try {

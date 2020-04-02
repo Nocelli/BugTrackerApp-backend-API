@@ -2,6 +2,7 @@ const connection = require('../database/connection')
 const VerifyToken = require('../utils/VerifyToken')
 const generateUniqueId = require('../utils/GenerateUniqueId')
 const getRoleId = require('../utils/GetRoleIdByName')
+const knex = require('knex')
 
 
 module.exports = {
@@ -42,7 +43,24 @@ module.exports = {
     },
 
     //this function will be removed
-    async listProjects(){
-
+    async listProjects(req, res){
+        try{
+            const projects = await connection('projects')
+            .join('members', {'project_id': 'projects.id'})
+            .join('users', { 'users.id' : 'members.user_id'})
+            .join('roles', { 'roles.id' : 'members.role_id'})
+            .where('roles.id', '1')
+            .select(
+                'projects.*',
+                knex.raw(`users.name as "Dono"`),
+                knex.raw(`users.id as "Dono-ID"`)
+            )
+            
+            return res.json(projects)
+        }
+        catch(err){
+            console.log(err)
+            return res.status(500).json(err)
+        }
     }
 }
