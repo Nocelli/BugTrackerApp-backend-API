@@ -88,5 +88,42 @@ module.exports = {
             console.log(err)
             return res.status(500).json(err)
         }
+    },
+
+    async deleteProject(req, res) {
+        try {
+            const token = await VerifyToken(req.headers.token)
+            if (token.isValid) {
+                const projectId = req.params.projectId
+                const loggedUserId = token.DecodedToken.userId
+
+                const project = await connection('projects')
+                    .join('members', { 'project_id': 'projects.id' })
+                    .join('users', { 'users.id': 'members.user_id' })
+                    .join('roles', { 'roles.id': 'members.role_id' })
+                    .where('roles.id', '1')
+                    .where('users.id', loggedUserId)
+                    .where('projects.id', projectId)
+                    .select('projects.id')
+                    .first()
+
+                if(!project)
+                    return res.status(404).json(`Project not found`)
+
+
+                //delete all members
+                    await connection('members').where('members.project_id', project.id).delete()
+                //delete all tickets
+                    await connection('tickets').where('tickets.project_id', project.id).delete()
+                //delete project
+                    await connection('projects').where('projects.id', project.id).delete()
+
+                return res.status(204).send()
+            }
+        }
+        catch (err) {
+            console.log(err)
+            return res.status(500).json(err)
+        }
     }
 }

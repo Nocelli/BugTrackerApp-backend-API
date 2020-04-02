@@ -26,9 +26,11 @@ routers.post('/roles', RolesController.createRole)
 
 routers.get('/project', ProjectController.listMyProjects)
 routers.post('/project', ProjectController.createProject)
+routers.delete('/project/:projectId', ProjectController.deleteProject)
 
 routers.post('/member/:projectId', MembersController.addMemberToProject)
 routers.get('/member/:projectId', MembersController.listMemberOfProject)
+
 
 
 module.exports = routers
