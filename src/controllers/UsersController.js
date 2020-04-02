@@ -60,7 +60,7 @@ module.exports = {
                     return res.status(401).json({ error: 'Operation not permitted.' })
             }
             else
-                return res.status(400).json(token.error)
+                return res.status(401).json(token.error)
         }
         catch (err) {
             console.log(err)

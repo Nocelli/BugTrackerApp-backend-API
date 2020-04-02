@@ -1,7 +1,7 @@
 
 exports.up = function(knex) {
     return knex.schema.createTable('members', function (table) {
-        table.string('id').primary();
+        table.increments('id').primary();
         table.string('user_id').notNullable();
         table.string('role_id').notNullable();
         table.string('project_id').notNullable();
