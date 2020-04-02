@@ -8,7 +8,9 @@ module.exports = {
     },
 
     async createRole(req, res) {
-        const { name, description, read, edit, create } = req.body
+        return res.status(501).send()
+
+        /* const { name, description, read, edit, create } = req.body
         const id = await connection('roles').insert({
             name,
             description,
@@ -17,6 +19,6 @@ module.exports = {
             create
         })
 
-        return res.status(201).json({ 'id': id })
+        return res.status(201).json({ 'id': id }) */
     }
 }

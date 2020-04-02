@@ -3,6 +3,7 @@ const TicketController = require('./controllers/TicketsController')
 const UsersController = require('./controllers/UsersController')
 const LoginController = require('./controllers/LoginController')
 const RolesController = require('./controllers/RolesController')
+const ProjectController = require('./controllers/ProjectController')
 
 const routers = express.Router()
 
