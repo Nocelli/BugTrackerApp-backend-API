@@ -1,0 +1,1 @@
+//this function return the user`s member id in the specified project

@@ -28,7 +28,7 @@ module.exports = {
                             },
                             process.env.TOKEN_KEY,
                             {
-                                expiresIn: '30m'
+                                expiresIn: `${process.env.EXPIRATIONTIME}m`
                             })
                         return res.status(200).json({ token: token })
                     }
