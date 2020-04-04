@@ -33,6 +33,7 @@ routers.get('/profile', ProfileController.ListProjectsImIn)
 
 routers.post('/member/:projectId', MembersController.addMemberToProject)
 routers.get('/member/:projectId', MembersController.listMemberOfProject)
+routers.delete('/member/:projectId', MembersController.kickMember)
 
 
 
