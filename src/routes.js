@@ -5,16 +5,13 @@ const LoginController = require('./controllers/LoginController')
 const RolesController = require('./controllers/RolesController')
 const ProjectController = require('./controllers/ProjectController')
 const ProfileController = require('./controllers/ProfileController')
+const TicketController = require('./controllers/TicketsController')
 
 const routers = express.Router()
 
-routers.get('/', (req, res)=>{
-    res.json({
-        Foo: 'bar'
-    })
-
-    return res.json
-})
+routers.get('/tickets/:projectId/:status', TicketController.listProjectTickets)
+routers.post('/tickets/:projectId', TicketController.createTicket)
+routers.delete('/tickets/:ticketsId', TicketController.deleteTicket)
 
 routers.get('/users', UsersController.listUsers)
 routers.post('/users', UsersController.createUser)
