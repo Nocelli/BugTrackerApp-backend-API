@@ -1,14 +1,19 @@
 const connection = require('../database/connection')
 const bcrypt = require('bcrypt')
 const VerifyToken = require('../utils/VerifyToken')
-const generateUniqueId = require('../utils/GenerateUniqueId')
+const GenerateUniqueId = require('../utils/GenerateUniqueId')
+const IsEmailAlreadyInUse = require('../utils/IsEmailAlreadyInUse')
 
 module.exports = {
     async createUser(req, res) {
         try {
             const { name, email, password } = req.body
+            
+            if(await IsEmailAlreadyInUse(email))
+                return res.status(400).json('Email Address is Already Registered.')
+        
             const hashedPassword = await bcrypt.hash(password, 12)
-            const id = generateUniqueId()
+            const id = GenerateUniqueId()
 
             await connection('users').insert({
                 id,
