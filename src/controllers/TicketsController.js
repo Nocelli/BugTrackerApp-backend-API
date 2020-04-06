@@ -85,7 +85,7 @@ module.exports = {
                     status: status.toLowerCase(),
                     severity: severity.toLowerCase(),
                     type: type.toLowerCase(),
-                    date: Date.now(),
+                    date: Math.floor(new Date().getTime()/1000.0),
                     project_id: projectId,
                     member_id: memberId
                 })

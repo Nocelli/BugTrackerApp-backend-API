@@ -6,6 +6,8 @@ const config = process.env.NODE_ENV === 'test' ?
     configuration.test : (
         process.env.NODE_ENV === 'development' ?
             configuration.development :
+            (process.env.NODE_ENV === 'staging') ?
+            configuration.staging :
             configuration.production
     )
 

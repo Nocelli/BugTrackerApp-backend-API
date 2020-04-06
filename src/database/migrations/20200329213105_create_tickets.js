@@ -8,7 +8,7 @@ exports.up = function(knex) {
         table.string('status').notNullable();
         table.string('severity').notNullable();
         table.string('type').notNullable();
-        table.datetime('date').notNullable();
+        table.bigInteger('date').notNullable();
         table.string('project_id').notNullable();
         table.integer('member_id').unsigned().notNullable();
 
