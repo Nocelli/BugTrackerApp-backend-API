@@ -9,9 +9,10 @@ const TicketController = require('./controllers/TicketsController')
 
 const routers = express.Router()
 
-routers.get('/tickets/:projectId/:status', TicketController.listProjectTickets)
+routers.get('/tickets/:projectId/:status?', TicketController.listProjectTickets)
 routers.post('/tickets/:projectId', TicketController.createTicket)
-routers.delete('/tickets/:ticketsId', TicketController.deleteTicket)
+routers.delete('/tickets/:ticketId', TicketController.deleteTicket)
+routers.put('/tickets/:ticketId', TicketController.changeTicketStatus)
 
 routers.get('/users', UsersController.listUsers)
 routers.post('/users', UsersController.createUser)
@@ -27,6 +28,7 @@ routers.post('/project', ProjectController.createProject)
 routers.delete('/project/:projectId', ProjectController.deleteProject)
 
 routers.get('/profile', ProfileController.ListProjectsImIn)
+routers.get('/profile/tickets/:projectId?', ProfileController.ListMyTickets)
 
 routers.post('/member/:projectId', MembersController.addMemberToProject)
 routers.get('/member/:projectId', MembersController.listMemberOfProject)
