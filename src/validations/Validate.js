@@ -1,0 +1,163 @@
+const { celebrate, Segments, Joi } = require('celebrate')
+
+module.exports = {
+    ListProjectTickets: celebrate({
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown(),
+        [Segments.PARAMS]: Joi.object().keys({
+            projectId: Joi.string().required(),
+            status: Joi.string()
+        })
+    }),
+
+    CreateTickets: celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            name: Joi.string().required(),
+            description: Joi.string().required(),
+            summary: Joi.string().required().max(200),
+            status: Joi.string().required().max(20),
+            severity: Joi.string().required().max(20),
+            type: Joi.string().required().max(20)
+        }),
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown(),
+        [Segments.PARAMS]: Joi.object().keys({
+            projectId: Joi.string().required()
+        })
+    }),
+
+    DeleteTicket: celebrate({
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown(),
+        [Segments.PARAMS]: Joi.object().keys({
+            ticketId: Joi.string().required()
+        })
+    }),
+
+    ChangeTicketStatus: celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            status: Joi.string().required().max(20)
+        }),
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown(),
+        [Segments.PARAMS]: Joi.object().keys({
+            ticketId: Joi.string().required()
+        })
+    }),
+
+    CreateUser: celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            name: Joi.string().required(),
+            email: Joi.string().required().email(),
+            password: Joi.string().required().min(8).max(16)
+        })
+    }),
+
+    DeleteUser: celebrate({
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown(),
+        [Segments.PARAMS]: Joi.object().keys({
+            id: Joi.string().length(8).required()
+        })
+    }),
+
+    Login: celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            email: Joi.string().required().email(),
+            password: Joi.string().required().min(8).max(16)
+        })
+    }),
+
+    ListMyProjects: celebrate({
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown()
+    }),
+
+    CreateProject: celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            name: Joi.string().required().max(50),
+            summary: Joi.string().required().max(144),
+            description: Joi.string().required().max(500)
+        }),
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown()
+    }),
+
+    DeleteProject: celebrate({
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown(),
+        [Segments.PARAMS]: Joi.object().keys({
+            projectId: Joi.string().length(8).required()
+        })
+    }),
+
+    ListProjectsImIn: celebrate({
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown()
+    }),
+
+    ListMyTickets: celebrate({
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown(),
+        [Segments.PARAMS]: Joi.object().keys({
+            projectId: Joi.string().length(8)
+        })
+    }),
+
+    AddMemberToProject: celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            userId: Joi.string().required().length(8),
+            roleId: Joi.number().required()
+        }),
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown(),
+        [Segments.PARAMS]: Joi.object().keys({
+            projectId: Joi.string().length(8).required()
+        })
+    }),
+
+    ListMembersOfProject: celebrate({
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown(),
+        [Segments.PARAMS]: Joi.object().keys({
+            projectId: Joi.string().length(8).required()
+        })
+    }),
+
+    KickMember: celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            userId: Joi.string().required().length(8)
+        }),
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown(),
+        [Segments.PARAMS]: Joi.object().keys({
+            projectId: Joi.string().length(8).required()
+        })
+    }),
+
+    ChangeRole: celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            userId: Joi.string().required().length(8),
+            newRoleId: Joi.number().required()
+        }),
+        [Segments.HEADERS]: Joi.object({
+            token: Joi.string().required()
+        }).unknown(),
+        [Segments.PARAMS]: Joi.object().keys({
+            projectId: Joi.string().length(8).required()
+        })
+    }),
+}
