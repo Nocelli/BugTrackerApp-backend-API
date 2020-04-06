@@ -4,8 +4,10 @@
   "description": "Backend do projeto Bugtracker",
   "main": "server.js",
   "scripts": {
+    "deploy": "git push heroku master",
     "test": "cross-env NODE_ENV=test jest",
-    "start": "cross-env NODE_ENV=development nodemon ./src/server.js"
+    "start": "cross-env NODE_ENV=development nodemon ./src/server.js",
+    "productionStart": "cross-env NODE_ENV=production nodemon ./src/server.js"
   },
   "author": "Rafael Nocelli Soares",
   "license": "MIT",
@@ -18,6 +20,7 @@
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.13",
+    "pg": "^8.0.0",
     "sqlite3": "^4.1.1"
   },
   "devDependencies": {
