@@ -1,8 +1,7 @@
-//this function return the user`s member id in the specified project
-
 const connection = require('../database/connection')
 
-//this function return the user role if the user is in the project, and return undefined if not
+
+//this function return the user`s member id in the specified project
 module.exports = async function GetUserMemberIdInProject(projectId, userId) {
     try {
         const memberId = await connection('projects')
@@ -13,8 +12,8 @@ module.exports = async function GetUserMemberIdInProject(projectId, userId) {
             .select('members.id')
             .first()
 
-        if (memberId != undefined)
-            return memberId
+        if (memberId)
+            return memberId.id
         else
             return false
     }
