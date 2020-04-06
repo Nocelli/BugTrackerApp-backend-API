@@ -31,29 +31,31 @@ module.exports = {
   },
 
   staging: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
-      database: 'my_db',
-      user:     'username',
-      password: 'password'
+      database: 'bugtrackerDB',
+      user: 'postgres',
+      password: '1234'
     },
     migrations : {
-      directory : './src/database/migrations'
+      directory : './src/database/pgMigrations'
     },
     seeds: {
       directory : './src/database/seeds'
     },
+    useNullAsDefault: true,
   },
 
   production: {
     client: 'pg',
     connection: process.env.DATABASE_URL,
     migrations : {
-      directory : './src/database/migrations'
+      directory : './src/database/pgMigrations'
     },
     seeds: {
       directory : './src/database/seeds'
     },
+    useNullAsDefault: true,
   }
 
 };

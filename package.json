@@ -7,7 +7,7 @@
     "deploy": "git push heroku master",
     "test": "cross-env NODE_ENV=test jest",
     "start": "node ./src/server.js",
-    "startDevelepment": "cross-env NODE_ENV=development nodemon ./src/server.js",
+    "startDevelepment": "cross-env NODE_ENV=staging nodemon ./src/server.js",
     "productionStart": "cross-env NODE_ENV=production nodemon ./src/server.js"
   },
   "author": "Rafael Nocelli Soares",
