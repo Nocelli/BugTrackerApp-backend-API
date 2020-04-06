@@ -62,7 +62,7 @@ routers.put('/tickets/:ticketId',celebrate({
 
 
 //users
-routers.get('/users', UsersController.listUsers)
+//routers.get('/users', UsersController.listUsers)
 routers.post('/users',
     celebrate({
         [Segments.BODY]: Joi.object().keys({
@@ -92,7 +92,7 @@ routers.post('/login',celebrate({
 
 //roles
 routers.get('/roles', RolesController.listRoles)
-routers.post('/roles', RolesController.createRole)
+//routers.post('/roles', RolesController.createRole)
 
 
 //project
