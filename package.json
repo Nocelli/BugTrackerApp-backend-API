@@ -6,7 +6,8 @@
   "scripts": {
     "deploy": "git push heroku master",
     "test": "cross-env NODE_ENV=test jest",
-    "start": "cross-env NODE_ENV=development nodemon ./src/server.js",
+    "start": "knex migrate:rollback && knex migrate:latest && knex seed:run && node ./src/server.js",
+    "startDevelepment": "cross-env NODE_ENV=development nodemon ./src/server.js",
     "productionStart": "cross-env NODE_ENV=production nodemon ./src/server.js"
   },
   "author": "Rafael Nocelli Soares",
