@@ -1,5 +1,4 @@
 const connection = require('../database/connection')
-const VerifyToken = require('../utils/VerifyToken')
 const IsTheUserInTheProject = require('../utils/IsTheUserInTheProject')
 const knex = require('knex')
 

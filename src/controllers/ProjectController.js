@@ -1,5 +1,4 @@
 const connection = require('../database/connection')
-const VerifyToken = require('../utils/VerifyToken')
 const generateUniqueId = require('../utils/GenerateUniqueId')
 const getRoleId = require('../utils/GetRoleIdByName')
 const knex = require('knex')

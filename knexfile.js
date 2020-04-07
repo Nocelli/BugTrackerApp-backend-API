@@ -3,12 +3,14 @@
 module.exports = {
 
   development: {
-    client: 'sqlite3',
+    client: 'pg',
     connection: {
-      filename: './src/database/database.sqlite'
+      database: 'bugtrackerDB',
+      user: 'postgres',
+      password: '1234'
     },
     migrations : {
-      directory : './src/database/migrations'
+      directory : './src/database/pgMigrations'
     },
     seeds: {
       directory : './src/database/seeds'
