@@ -1,44 +1,38 @@
 const connection = require('../database/connection')
-const VerifyToken = require('../utils/VerifyToken')
 const isTheUserInTheProject = require('../utils/IsTheUserInTheProject')
 const knex = require('knex')
 
 module.exports = {
     async addMemberToProject(req, res) {
         try {
-            const token = await VerifyToken(req.headers.token)
-            if (token.isValid) {
-                const projectId = req.params.projectId
-                const { userId, roleId } = req.body
-                const loggedUserId = token.DecodedToken.userId
-                const loggedUserRoleInProject = await isTheUserInTheProject(projectId, loggedUserId)
+            const projectId = req.params.projectId
+            const { userId, roleId } = req.body
+            const loggedUserId = res.locals.userId
+            const loggedUserRoleInProject = await isTheUserInTheProject(projectId, loggedUserId)
 
-                //check if the user is not being added as owner
-                if (roleId === 1)
-                    return res.status(400).json(`There can be only one owner`)
+            //check if the user is not being added as owner
+            if (roleId === 1)
+                return res.status(400).json(`There can be only one owner`)
 
-                //check if project exists
-                if (loggedUserRoleInProject === undefined)
-                    return res.status(404).json(`Project not found.`)
+            //check if project exists
+            if (loggedUserRoleInProject === undefined)
+                return res.status(404).json(`Project not found.`)
 
-                //check if the logged user have invite privileges in the project
-                if (loggedUserRoleInProject > 2)
-                    return res.status(403).json(`You need to be at least an admin to add members to this project.`)
+            //check if the logged user have invite privileges in the project
+            if (loggedUserRoleInProject > 2)
+                return res.status(403).json(`You need to be at least an admin to add members to this project.`)
 
-                //check if the user that are being added isant already in the project
-                if (await isTheUserInTheProject(projectId, userId))
-                    return res.status(400).json(`User already in project.`)
+            //check if the user that are being added isant already in the project
+            if (await isTheUserInTheProject(projectId, userId))
+                return res.status(400).json(`User already in project.`)
 
-                await connection('members').insert({
-                    user_id: userId,
-                    role_id: roleId,
-                    project_id: projectId
-                })
+            await connection('members').insert({
+                user_id: userId,
+                role_id: roleId,
+                project_id: projectId
+            })
 
-                return res.status(201).send()
-            }
-            else
-                return res.status(401).json(token.error)
+            return res.status(201).send()
         }
         catch (err) {
             console.log(err)
@@ -48,28 +42,24 @@ module.exports = {
 
     async listMemberOfProject(req, res) {
         try {
-            const token = await VerifyToken(req.headers.token)
-            if (token.isValid) {
-                const projectId = req.params.projectId
-                const loggedUserId = token.DecodedToken.userId
+            const projectId = req.params.projectId
+            const loggedUserId = res.locals.userId
 
-                if (!(await isTheUserInTheProject(projectId, loggedUserId)))
-                    return res.status(403).json(`Not enough clearance.`)
+            if (!(await isTheUserInTheProject(projectId, loggedUserId)))
+                return res.status(403).json(`Not enough clearance.`)
 
-                const members = await connection('projects')
-                    .join('members', { 'projects.id': 'members.project_id' })
-                    .join('users', { 'users.id': 'members.user_id' })
-                    .join('roles', { 'roles.id': 'members.role_id' })
-                    .where('projects.id', projectId) // project exist
-                    .select(
-                        knex.raw(`users.name as "Member-name"`),
-                        knex.raw(`roles.name as "role"`),
-                    )
+            const members = await connection('projects')
+                .join('members', { 'projects.id': 'members.project_id' })
+                .join('users', { 'users.id': 'members.user_id' })
+                .join('roles', { 'roles.id': 'members.role_id' })
+                .where('projects.id', projectId) // project exist
+                .select(
+                    knex.raw(`users.name as "Member-name"`),
+                    knex.raw(`roles.name as "role"`),
+                )
 
-                return res.json(members)
-            }
-            else
-                return res.status(401).json(token.error)
+            return res.json(members)
+
         }
         catch (err) {
             console.log(err)
@@ -79,42 +69,37 @@ module.exports = {
 
     async kickMember(req, res) {
         try {
-            const token = await VerifyToken(req.headers.token)
-            if (token.isValid) {
-                const projectId = req.params.projectId
-                const { userId } = req.body
-                const loggedUserId = token.DecodedToken.userId
-                const loggedUserRoleInProject = await isTheUserInTheProject(projectId, loggedUserId)
-                const removedUserRoleId = await isTheUserInTheProject(projectId, userId)
+            const projectId = req.params.projectId
+            const { userId } = req.body
+            const loggedUserId = res.locals.userId
+            const loggedUserRoleInProject = await isTheUserInTheProject(projectId, loggedUserId)
+            const removedUserRoleId = await isTheUserInTheProject(projectId, userId)
 
-                //check if project exists
-                if (!loggedUserRoleInProject)
-                    return res.status(404).json(`Project not found.`)
+            //check if project exists
+            if (!loggedUserRoleInProject)
+                return res.status(404).json(`Project not found.`)
 
-                //check if the logged user have moderating privileges in the project
-                if (loggedUserRoleInProject > 2)
-                    return res.status(403).json(`You need to be at least an admin to remove members of this project.`)
+            //check if the logged user have moderating privileges in the project
+            if (loggedUserRoleInProject > 2)
+                return res.status(403).json(`You need to be at least an admin to remove members of this project.`)
 
-                //check if the user that are being removed is in the project
-                if (!removedUserRoleId)
-                    return res.status(400).json(`User not in the project.`)
+            //check if the user that are being removed is in the project
+            if (!removedUserRoleId)
+                return res.status(400).json(`User not in the project.`)
 
-                //check if the logged user have a higher role than the user being deleted
-                if (loggedUserRoleInProject > removedUserRoleId)
-                    return res.status(403).json(`You cant remove an user with a role higher than yours.`)
+            //check if the logged user have a higher role than the user being deleted
+            if (loggedUserRoleInProject > removedUserRoleId)
+                return res.status(403).json(`You cant remove an user with a role higher than yours.`)
 
-                //deleting member
-                await await connection('members')
-                    .join('projects', { 'members.project_id': 'projects.id' })
-                    .join('users', { 'users.id': 'members.user_id' })
-                    .where('members.project_id', projectId) // project exist
-                    .where('members.user_id', userId)
-                    .delete()
+            //deleting member
+            await await connection('members')
+                .join('projects', { 'members.project_id': 'projects.id' })
+                .join('users', { 'users.id': 'members.user_id' })
+                .where('members.project_id', projectId) // project exist
+                .where('members.user_id', userId)
+                .delete()
 
-                return res.status(204).send()
-            }
-            else
-                return res.status(401).json(token.error)
+            return res.status(204).send()
         }
         catch (err) {
             console.log(err)
@@ -124,48 +109,43 @@ module.exports = {
 
     async changeRole(req, res) {
         try {
-            const token = await VerifyToken(req.headers.token)
-            if (token.isValid) {
-                const projectId = req.params.projectId
-                const { userId, newRoleId } = req.body
-                const loggedUserId = token.DecodedToken.userId
-                const loggedUserRoleInProject = await isTheUserInTheProject(projectId, loggedUserId)
-                const memberUserRoleId = await isTheUserInTheProject(projectId, userId)
+            const projectId = req.params.projectId
+            const { userId, newRoleId } = req.body
+            const loggedUserId = res.locals.userId
+            const loggedUserRoleInProject = await isTheUserInTheProject(projectId, loggedUserId)
+            const memberUserRoleId = await isTheUserInTheProject(projectId, userId)
 
-                //check if the new role is the 'owner' role
-                if (newRoleId === 1)
-                    return res.status(400).json(`There can be only one owner`)
+            //check if the new role is the 'owner' role
+            if (newRoleId === 1)
+                return res.status(400).json(`There can be only one owner`)
 
-                //check if project exists
-                if (!loggedUserRoleInProject)
-                    return res.status(404).json(`Project not found.`)
+            //check if project exists
+            if (!loggedUserRoleInProject)
+                return res.status(404).json(`Project not found.`)
 
-                //check if the logged user have moderating privileges in the project
-                if (loggedUserRoleInProject > 2)
-                    return res.status(403).json(`You need to be at least an admin to change members roles.`)
+            //check if the logged user have moderating privileges in the project
+            if (loggedUserRoleInProject > 2)
+                return res.status(403).json(`You need to be at least an admin to change members roles.`)
 
-                //check if the user that are being changed is in the project
-                if (!memberUserRoleId)
-                    return res.status(400).json(`User not in the project.`)
+            //check if the user that are being changed is in the project
+            if (!memberUserRoleId)
+                return res.status(400).json(`User not in the project.`)
 
-                //check if the logged user have a higher role than the user being changed
-                if (loggedUserRoleInProject > memberUserRoleId)
-                    return res.status(403).json(`You cant change an users role with a role higher than yours.`)
+            //check if the logged user have a higher role than the user being changed
+            if (loggedUserRoleInProject > memberUserRoleId)
+                return res.status(403).json(`You cant change an users role with a role higher than yours.`)
 
-                //changing role ,returns 1 if changed
-                if ((
-                    await connection('members')
-                        .join('projects', { 'members.project_id': 'projects.id' })
-                        .join('users', { 'users.id': 'members.user_id' })
-                        .where('members.project_id', projectId) // project exist
-                        .where('members.user_id', userId)
-                        .update({ role_id: newRoleId })))
-                    return res.status(202).send()
+            //changing role ,returns 1 if changed
+            if ((
+                await connection('members')
+                    .join('projects', { 'members.project_id': 'projects.id' })
+                    .join('users', { 'users.id': 'members.user_id' })
+                    .where('members.project_id', projectId) // project exist
+                    .where('members.user_id', userId)
+                    .update({ role_id: newRoleId })))
+                return res.status(202).send()
 
-                return res.status(304).send()
-            }
-            else
-                return res.status(401).json(token.error)
+            return res.status(304).send()
         }
         catch (err) {
             console.log(err)

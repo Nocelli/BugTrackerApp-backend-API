@@ -39,9 +39,7 @@ module.exports = {
         try {
             const { id } = req.params;
             const token = await VerifyToken(req.headers.token)
-
-            if (token.isValid) {
-                const userTokenId = token.DecodedToken.userId
+                const userTokenId = res.locals.userId
 
 
                 if (id.length != 8)
@@ -61,9 +59,6 @@ module.exports = {
                 }
                 else
                     return res.status(401).json({ error: 'Operation not permitted.' })
-            }
-            else
-                return res.status(401).json(token.error)
         }
         catch (err) {
             console.log(err)

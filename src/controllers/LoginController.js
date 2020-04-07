@@ -13,8 +13,8 @@ module.exports = {
                 .where('email', email)
                 .first()
 
-            if(user === undefined)
-                return res.status(401).json({ error: 'Operation not permitted.' })
+            if(!user)
+                return res.status(404).json({ error: 'User not found.' })
 
             await bcrypt.compare(password, user.password,
                 (err, result) => {
@@ -23,14 +23,18 @@ module.exports = {
 
                     if (result) {
                         const token = jwt.sign(
-                            {
-                                userId: user.id
-                            },
+                            {userId: user.id},
                             process.env.TOKEN_KEY,
-                            {
-                                expiresIn: `${process.env.EXPIRATIONTIME}m`
-                            })
-                        return res.status(200).json({ token: token })
+                            {expiresIn: `${process.env.EXPIRATIONTIME}m`})
+
+                        const refreshToken = jwt.sign(
+                            {userId: user.id},
+                            user.password,
+                            {expiresIn: `${process.env.EXPIRATIONTIMEREFRESH}d`})
+
+                        res.setHeader('x-token', token)
+                        res.setHeader('x-token-refresh', refreshToken)
+                        return res.status(200).send()
                     }
                     else
                         return res.status(401).json({ error: 'Operation not permitted.' })

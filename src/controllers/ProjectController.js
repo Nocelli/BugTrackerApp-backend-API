@@ -8,12 +8,9 @@ const knex = require('knex')
 module.exports = {
     async createProject(req, res) {
         try {
-            const token = await VerifyToken(req.headers.token)
-            if (token.isValid) {
-
                 const { name, summary, description } = req.body
                 const roleId = await getRoleId('Dono')
-                const ownerId = token.DecodedToken.userId
+                const ownerId = res.locals.userId
                 const id = generateUniqueId()
 
                 //Creating project
@@ -32,9 +29,6 @@ module.exports = {
                 })
 
                 return res.status(201).json({ ProjectId: id })
-            }
-            else
-                return res.status(401).json(token.error)
         }
         catch (err) {
             console.log(err)
@@ -66,23 +60,18 @@ module.exports = {
 
     async listMyProjects(req, res) {
         try {
+            const ownerId = res.locals.userId
 
-            const token = await VerifyToken(req.headers.token)
-            if (token.isValid) {
-                const ownerId = token.DecodedToken.userId
+            const projects = await connection('projects')
+                .join('members', { 'project_id': 'projects.id' })
+                .join('users', { 'users.id': 'members.user_id' })
+                .join('roles', { 'roles.id': 'members.role_id' })
+                .where('roles.id', '1')
+                .where('users.id', ownerId)
+                .select('projects.*')
 
-                const projects = await connection('projects')
-                    .join('members', { 'project_id': 'projects.id' })
-                    .join('users', { 'users.id': 'members.user_id' })
-                    .join('roles', { 'roles.id': 'members.role_id' })
-                    .where('roles.id', '1')
-                    .where('users.id', ownerId)
-                    .select('projects.*')
+            return res.json(projects)
 
-                return res.json(projects)
-            }
-            else
-                return res.status(401).json(token.error)
         }
         catch (err) {
             console.log(err)
@@ -92,10 +81,8 @@ module.exports = {
 
     async deleteProject(req, res) {
         try {
-            const token = await VerifyToken(req.headers.token)
-            if (token.isValid) {
                 const projectId = req.params.projectId
-                const loggedUserId = token.DecodedToken.userId
+                const loggedUserId = res.locals.userId
 
                 const project = await connection('projects')
                     .join('members', { 'project_id': 'projects.id' })
@@ -107,20 +94,19 @@ module.exports = {
                     .select('projects.id')
                     .first()
 
-                if(!project)
+                if (!project)
                     return res.status(404).json(`Project not found`)
 
 
                 //delete all members
-                    await connection('members').where('members.project_id', project.id).delete()
+                await connection('members').where('members.project_id', project.id).delete()
                 //delete all tickets
-                    await connection('tickets').where('tickets.project_id', project.id).delete()
+                await connection('tickets').where('tickets.project_id', project.id).delete()
                 //delete project
-                    await connection('projects').where('projects.id', project.id).delete()
+                await connection('projects').where('projects.id', project.id).delete()
 
                 return res.status(204).send()
             }
-        }
         catch (err) {
             console.log(err)
             return res.status(500).json(err)

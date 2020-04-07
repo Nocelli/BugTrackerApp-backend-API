@@ -2,9 +2,6 @@ const { celebrate, Segments, Joi } = require('celebrate')
 
 module.exports = {
     ListProjectTickets: celebrate({
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown(),
         [Segments.PARAMS]: Joi.object().keys({
             projectId: Joi.string().required(),
             status: Joi.string()
@@ -20,18 +17,12 @@ module.exports = {
             severity: Joi.string().required().max(20),
             type: Joi.string().required().max(20)
         }),
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown(),
         [Segments.PARAMS]: Joi.object().keys({
             projectId: Joi.string().required()
         })
     }),
 
     DeleteTicket: celebrate({
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown(),
         [Segments.PARAMS]: Joi.object().keys({
             ticketId: Joi.string().required()
         })
@@ -41,9 +32,6 @@ module.exports = {
         [Segments.BODY]: Joi.object().keys({
             status: Joi.string().required().max(20)
         }),
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown(),
         [Segments.PARAMS]: Joi.object().keys({
             ticketId: Joi.string().required()
         })
@@ -58,9 +46,6 @@ module.exports = {
     }),
 
     DeleteUser: celebrate({
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown(),
         [Segments.PARAMS]: Joi.object().keys({
             id: Joi.string().length(8).required()
         })
@@ -73,42 +58,21 @@ module.exports = {
         })
     }),
 
-    ListMyProjects: celebrate({
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown()
-    }),
-
     CreateProject: celebrate({
         [Segments.BODY]: Joi.object().keys({
             name: Joi.string().required().max(50),
             summary: Joi.string().required().max(144),
             description: Joi.string().required().max(500)
-        }),
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown()
+        })
     }),
 
     DeleteProject: celebrate({
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown(),
         [Segments.PARAMS]: Joi.object().keys({
             projectId: Joi.string().length(8).required()
         })
     }),
 
-    ListProjectsImIn: celebrate({
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown()
-    }),
-
     ListMyTickets: celebrate({
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown(),
         [Segments.PARAMS]: Joi.object().keys({
             projectId: Joi.string().length(8)
         })
@@ -119,18 +83,12 @@ module.exports = {
             userId: Joi.string().required().length(8),
             roleId: Joi.number().required()
         }),
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown(),
         [Segments.PARAMS]: Joi.object().keys({
             projectId: Joi.string().length(8).required()
         })
     }),
 
     ListMembersOfProject: celebrate({
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown(),
         [Segments.PARAMS]: Joi.object().keys({
             projectId: Joi.string().length(8).required()
         })
@@ -140,9 +98,6 @@ module.exports = {
         [Segments.BODY]: Joi.object().keys({
             userId: Joi.string().required().length(8)
         }),
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown(),
         [Segments.PARAMS]: Joi.object().keys({
             projectId: Joi.string().length(8).required()
         })
@@ -153,9 +108,6 @@ module.exports = {
             userId: Joi.string().required().length(8),
             newRoleId: Joi.number().required()
         }),
-        [Segments.HEADERS]: Joi.object({
-            token: Joi.string().required()
-        }).unknown(),
         [Segments.PARAMS]: Joi.object().keys({
             projectId: Joi.string().length(8).required()
         })
