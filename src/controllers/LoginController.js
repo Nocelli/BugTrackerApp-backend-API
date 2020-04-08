@@ -11,6 +11,7 @@ module.exports = {
             const user = await connection('users')
                 .select('*')
                 .where('email', email)
+                .where('confirmed', true)
                 .first()
 
             if(!user)

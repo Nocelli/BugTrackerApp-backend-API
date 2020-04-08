@@ -2,6 +2,8 @@ const connection = require('../database/connection')
 const bcrypt = require('bcrypt')
 const GenerateUniqueId = require('../utils/GenerateUniqueId')
 const IsEmailAlreadyInUse = require('../utils/IsEmailAlreadyInUse')
+const sendUserConfirmationEmail = require('../validations/sendUserConfirmationEmail')
+const CreateConfirmationToken = require('../validations/CreateConfirmationToken')
 
 module.exports = {
     async createUser(req, res) {
@@ -18,10 +20,13 @@ module.exports = {
                 id,
                 name,
                 email,
-                password: hashedPassword
+                password: hashedPassword,
+                confirmed : false
             })
+            
+            sendUserConfirmationEmail(email,CreateConfirmationToken(id))
 
-            return res.status(201).json({ id })
+            return res.status(201).json({status : 'Waiting for email confirmation'})
         }
         catch (err) {
             console.log(err)
