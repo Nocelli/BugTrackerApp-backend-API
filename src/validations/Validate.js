@@ -13,9 +13,9 @@ module.exports = {
             name: Joi.string().required(),
             description: Joi.string().required(),
             summary: Joi.string().required().max(200),
-            status: Joi.string().required().max(20),
-            severity: Joi.string().required().max(20),
-            type: Joi.string().required().max(20)
+            status: Joi.string().required().valid("Aberto","Em andamento","Para ser testado","Fechado"),
+            severity: Joi.string().required().valid("Nenhum", "Crítico", "Grave", "Não-urgente"),
+            type: Joi.string().required().valid("Subtarefa", "Bug", "Aperfeiçoamento", "Novo recurso", "Tarefa")
         }),
         [Segments.PARAMS]: Joi.object().keys({
             projectId: Joi.string().required()
