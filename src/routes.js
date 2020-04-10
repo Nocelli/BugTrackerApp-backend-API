@@ -6,7 +6,7 @@ const Authenticate = require('./authentication/Authenticate')
 const routers = express.Router()
 
 
-routers.get('/confirmations/validation/:confirmationToken', Controllers.Confirmations.validateEmail)
+routers.get('/confirmations/validation/:confirmationToken', Validate.confirmationToken ,Controllers.Confirmations.validateEmail)
 routers.post('/confirmations/resendemail', Controllers.Confirmations.resendEmail)
 
 routers.get('/tickets/:projectId/:status?', Authenticate, Validate.ListProjectTickets, Controllers.Tickets.listProjectTickets)

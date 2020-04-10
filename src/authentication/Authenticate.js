@@ -10,14 +10,14 @@ function AuthenticateTokens(req, res, next) {
         jwt.verify(token, process.env.TOKEN_KEY, (err, decoded) => {
             if (err) {
                 if (err.name.localeCompare('TokenExpiredError'))
-                    return res.status(401).json('Failed to authenticate')
+                    return res.status(401).json({error : 'Failed to authenticate'})
 
                 jwt.verify(token, process.env.TOKEN_KEY, { ignoreExpiration: true }, async (err, decoded) => {
 
                     const user = await GetUserById(decoded.userId)
                     jwt.verify(refreshToken, user.password, (err, decoded) => {
                         if (err)
-                            return res.status(401).json('Failed to authenticate')
+                            return res.status(401).json({error : 'Failed to authenticate'})
 
                         res.locals.userId = decoded.userId
                         res.setHeader('x-token', jwt.sign(

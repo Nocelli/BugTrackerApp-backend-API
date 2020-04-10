@@ -28,7 +28,7 @@ module.exports = {
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json(err)
+            return res.status(500).json({ error: err })
         }
     },
 
@@ -50,7 +50,7 @@ module.exports = {
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json(err)
+            return res.status(500).json({ error: err })
         }
     }
 }

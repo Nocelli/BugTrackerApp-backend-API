@@ -4,7 +4,7 @@ const { errors } = require('celebrate')
 const cors = require('cors')
 
 const corsOptions = {
-    exposedHeaders: 'x-token, x-token-refresh',
+    exposedHeaders: 'x-token, x-token-refresh, error',
   }
 
 const app = express()

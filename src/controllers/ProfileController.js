@@ -20,7 +20,7 @@ module.exports = {
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json(err)
+            return res.status(500).json({error : err})
         }
     },
 
@@ -33,7 +33,7 @@ module.exports = {
             //check if user is in the project
             if (projectId)
                 if (!(await IsTheUserInTheProject(projectId, userId)))
-                    return res.status(401).json('You cant see tickets from this project')
+                    return res.status(401).json({error :'You cant see tickets from this project'})
 
 
             const tickets = (projectId ?
@@ -73,7 +73,7 @@ module.exports = {
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json(err)
+            return res.status(500).json({error : err})
         }
     }
 }

@@ -117,23 +117,23 @@ module.exports = {
 
             //check if the new role is the 'owner' role
             if (newRoleId === 1)
-                return res.status(400).json(`There can be only one owner`)
+                return res.status(400).json({error : `There can be only one owner`})
 
             //check if project exists
             if (!loggedUserRoleInProject)
-                return res.status(404).json(`Project not found.`)
+                return res.status(404).json({error :`Project not found.`})
 
             //check if the logged user have moderating privileges in the project
             if (loggedUserRoleInProject > 2)
-                return res.status(403).json(`You need to be at least an admin to change members roles.`)
+                return res.status(403).json({error :`You need to be at least an admin to change members roles.`})
 
             //check if the user that are being changed is in the project
             if (!memberUserRoleId)
-                return res.status(400).json(`User not in the project.`)
+                return res.status(400).json({error :`User not in the project.`})
 
             //check if the logged user have a higher role than the user being changed
             if (loggedUserRoleInProject > memberUserRoleId)
-                return res.status(403).json(`You cant change an users role with a role higher than yours.`)
+                return res.status(403).json({error :`You cant change an users role with a role higher than yours.`})
 
             //changing role ,returns 1 if changed
             if ((
@@ -149,7 +149,7 @@ module.exports = {
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json(err)
+            return res.status(500).json({error : err})
         }
     }
 }

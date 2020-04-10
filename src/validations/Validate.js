@@ -28,6 +28,12 @@ module.exports = {
         })
     }),
 
+    confirmationToken : celebrate({
+        [Segments.PARAMS]: Joi.object().keys({
+            confirmationToken: Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/)
+        })
+    }),
+
     ChangeTicketStatus: celebrate({
         [Segments.BODY]: Joi.object().keys({
             status: Joi.string().required().max(20)

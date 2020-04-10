@@ -31,7 +31,7 @@ module.exports = {
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json(err)
+            return res.status(500).json({error : err})
         }
     },
 
@@ -53,7 +53,7 @@ module.exports = {
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json(err)
+            return res.status(500).json({error : err})
         }
     },
 
@@ -74,7 +74,7 @@ module.exports = {
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json(err)
+            return res.status(500).json({error : err})
         }
     },
 
@@ -94,7 +94,7 @@ module.exports = {
                     .first()
 
                 if (!project)
-                    return res.status(404).json(`Project not found`)
+                    return res.status(404).json({error : `Project not found`})
 
 
                 //delete all members
@@ -108,7 +108,7 @@ module.exports = {
             }
         catch (err) {
             console.log(err)
-            return res.status(500).json(err)
+            return res.status(500).json({error : err})
         }
     }
 }

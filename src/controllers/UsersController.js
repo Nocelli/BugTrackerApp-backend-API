@@ -11,7 +11,7 @@ module.exports = {
             const { name, email, password } = req.body
 
             if (await IsEmailAlreadyInUse(email))
-                return res.status(400).json('Email Address is Already Registered.')
+                return res.status(400).json({error :'Email Address is Already Registered.'})
 
             const hashedPassword = await bcrypt.hash(password, 12)
             const id = GenerateUniqueId()
@@ -29,7 +29,7 @@ module.exports = {
             return res.status(201).json({status : 'Waiting for email confirmation'})
         }
         catch (err) {
-            console.log(err)
+            console.log({error : err})
         }
     },
 
@@ -64,7 +64,7 @@ module.exports = {
                 return res.status(401).json({ error: 'Operation not permitted.' })
         }
         catch (err) {
-            console.log(err)
+            console.log({error : err})
         }
     }
 }
