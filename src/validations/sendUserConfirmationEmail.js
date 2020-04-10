@@ -15,7 +15,7 @@ async function sendUserConfirmationEmail(email,ConfirmationToken) {
     from: '"Bug Hero" <BugHero.App@gmail.com>',
     to: email,
     subject: "Verificação de email do Bug-Hero ✔",
-    html: `Clique no link para confirmar seu cadastro: <a href="${process.env.API_HOST}:${process.env.PORT}/confirmations/validation/${ConfirmationToken}" >${process.env.API_HOST}:${process.env.PORT}/confirmations/validation/${ConfirmationToken}</a>`
+    html: `Clique no link para confirmar seu cadastro: <a href="${process.env.API_HOST}/confirmed/${ConfirmationToken}" >${process.env.API_HOST}/confirmed/${ConfirmationToken}</a>`
     //html: ConfirmationMessage 
   });
 
