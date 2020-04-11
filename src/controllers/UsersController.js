@@ -2,6 +2,7 @@ const connection = require('../database/connection')
 const bcrypt = require('bcrypt')
 const GenerateUniqueId = require('../utils/GenerateUniqueId')
 const IsEmailAlreadyInUse = require('../utils/IsEmailAlreadyInUse')
+const GetUserByEmail = require('../utils/GetUserByEmail')
 const sendUserConfirmationEmail = require('../validations/sendUserConfirmationEmail')
 const CreateConfirmationToken = require('../validations/CreateConfirmationToken')
 
@@ -11,7 +12,7 @@ module.exports = {
             const { name, email, password } = req.body
 
             if (await IsEmailAlreadyInUse(email))
-                return res.status(400).json({error :'Email Address is Already Registered.'})
+                return res.status(400).json({ error: 'Email Address is Already Registered.' })
 
             const hashedPassword = await bcrypt.hash(password, 12)
             const id = GenerateUniqueId()
@@ -21,15 +22,15 @@ module.exports = {
                 name,
                 email,
                 password: hashedPassword,
-                confirmed : false
+                confirmed: false
             })
-            
-            sendUserConfirmationEmail(email,CreateConfirmationToken(id))
 
-            return res.status(201).json({status : 'Waiting for email confirmation'})
+            sendUserConfirmationEmail(email, CreateConfirmationToken(id), 'confirmation')
+
+            return res.status(201).json({ status: 'Waiting for email confirmation' })
         }
         catch (err) {
-            console.log({error : err})
+            console.log({ error: err })
         }
     },
 
@@ -64,7 +65,45 @@ module.exports = {
                 return res.status(401).json({ error: 'Operation not permitted.' })
         }
         catch (err) {
-            console.log({error : err})
+            console.log({ error: err })
+        }
+    },
+
+    async newPassword(req, res) {
+        try {
+            const { email } = req.body
+            const user = await GetUserByEmail(email)
+
+            if (!user)
+                return res.status(404).json({ error: 'User not found.' })
+
+            if (!user.confirmed) {
+                sendUserConfirmationEmail(user.email, CreateConfirmationToken(user.id), 'confirmation')
+                return res.status(401).json({ error: 'Confirm your email address, confirmation email sent.' })
+            }
+
+            sendUserConfirmationEmail(user.email, CreateConfirmationToken(user.id), 'resetPassword')
+            return res.status(200).json({ status: 'Confirmation email sent.' })
+        }
+        catch (err) {
+            console.log({ error: err })
+        }
+    },
+
+    async changePassword(req, res) {
+        try {
+            const { password } = req.body
+            const userId = res.locals.userId
+            const hashedPassword = await bcrypt.hash(password, 12)
+
+            await connection('users')
+                .where('users.id', userId)
+                .update({ 'password': hashedPassword })
+
+            return res.status(202).json({ status: 'Senha alterada com sucesso!' })
+        }
+        catch (err) {
+            console.log({ error: err })
         }
     }
 }

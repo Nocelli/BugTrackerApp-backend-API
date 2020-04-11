@@ -57,6 +57,18 @@ module.exports = {
         })
     }),
 
+    NewPassword: celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            email: Joi.string().required().email()
+        })
+    }),
+
+    ChangePassword: celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            password: Joi.string().required().min(8).max(16)
+        })
+    }),
+
     Login: celebrate({
         [Segments.BODY]: Joi.object().keys({
             email: Joi.string().required().email(),

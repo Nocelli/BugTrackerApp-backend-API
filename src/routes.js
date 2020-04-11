@@ -17,6 +17,8 @@ routers.put('/tickets/:ticketId', Authenticate, Validate.ChangeTicketStatus, Con
 //routers.get('/users', Controllers.Users.listUsers)
 routers.post('/users', Validate.CreateUser, Controllers.Users.createUser)
 routers.delete('/users/:id', Authenticate, Validate.DeleteUser, Controllers.Users.deleteUser)
+routers.post('/password/new', Validate.NewPassword, Controllers.Users.newPassword)
+routers.put('/password/new', Authenticate, Validate.ChangePassword, Controllers.Users.changePassword)
 
 routers.post('/login', Validate.Login, Controllers.Login.loginUser)
 

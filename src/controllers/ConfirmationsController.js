@@ -44,7 +44,7 @@ module.exports = {
                     return res.status(401).json({ error: 'This email was already confirmed' })
                 
                 
-            sendUserConfirmationEmail(user.email,CreateConfirmationToken(user.id))
+            sendUserConfirmationEmail(user.email,CreateConfirmationToken(user.id),'confirmation')
 
             return res.status(201).json({status : 'Waiting for email confirmation'})
         }

@@ -7,6 +7,9 @@ function AuthenticateTokens(req, res, next) {
         const token = req.headers['x-token']
         const refreshToken = req.headers['x-token-refresh']
 
+        if(!token)
+            return res.status(401).json({ error: 'Token must be provided' })
+
         jwt.verify(token, process.env.TOKEN_KEY, (err, decoded) => {
             if (err) {
                 if (err.name.localeCompare('TokenExpiredError'))
