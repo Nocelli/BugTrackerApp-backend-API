@@ -96,6 +96,12 @@ module.exports = {
         })
     }),
 
+    ListProjectInfo : celebrate({
+        [Segments.PARAMS]: Joi.object().keys({
+            projectId: Joi.string().length(8).required()
+        })
+    }),
+
     AddMemberToProject: celebrate({
         [Segments.BODY]: Joi.object().keys({
             userId: Joi.string().required().length(8),

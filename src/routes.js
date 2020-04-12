@@ -30,6 +30,7 @@ routers.post('/project', Authenticate, Validate.CreateProject, Controllers.Proje
 routers.delete('/project/:projectId', Authenticate, Validate.DeleteProject, Controllers.Projects.deleteProject)
 
 routers.get('/profile', Authenticate, Controllers.Profile.ListProjectsImIn)
+routers.get('/profile/project/:projectId', Validate.ListProjectInfo, Authenticate, Controllers.Profile.ListProjectInfo)
 routers.get('/profile/tickets/:projectId?', Authenticate, Validate.ListMyTickets, Controllers.Profile.ListMyTickets)
 
 routers.post('/member/:projectId', Authenticate, Validate.AddMemberToProject, Controllers.Members.addMemberToProject)

@@ -1,7 +1,6 @@
 const connection = require('../database/connection')
 const IsTheUserInTheProject = require('../utils/IsTheUserInTheProject')
-const knex = require('knex')
-
+const knex = require('knex')({ client: 'pg' });
 module.exports = {
 
     async ListProjectsImIn(req, res) {
@@ -20,7 +19,7 @@ module.exports = {
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json({error : err})
+            return res.status(500).json({ error: err })
         }
     },
 
@@ -33,7 +32,7 @@ module.exports = {
             //check if user is in the project
             if (projectId)
                 if (!(await IsTheUserInTheProject(projectId, userId)))
-                    return res.status(401).json({error :'You cant see tickets from this project'})
+                    return res.status(401).json({ error: 'You cant see tickets from this project' })
 
 
             const tickets = (projectId ?
@@ -73,7 +72,63 @@ module.exports = {
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json({error : err})
+            return res.status(500).json({ error: err })
+        }
+    },
+
+    async ListProjectInfo(req, res) {
+        try {
+            const userId = res.locals.userId
+            const projectId = req.params.projectId
+
+            //check if user is in the project
+            if (projectId)
+                if (!(await IsTheUserInTheProject(projectId, userId)))
+                    return res.status(401).json({ error: 'You cant see this project' })
+
+
+            const project = await connection('projects')
+                .where('projects.id', projectId)
+                .select(
+                    knex.raw(`projects.name as "project_Name"`),
+                    knex.raw(`projects.summary as "project_Summary"`),
+                    knex.raw(`projects.description as "project_Description"`))
+
+            const tickets = await connection('tickets')
+                .join('projects', { 'tickets.project_id': 'projects.id' })
+                .join('members', { 'projects.id': 'members.project_id' })
+                .join('users', { 'members.user_id': 'users.id' })
+                .where('projects.id', projectId)
+                .select(
+                    knex.raw(`tickets.name as "ticket_Name"`),
+                    knex.raw(`tickets.summary as "ticket_Summary"`),
+                    knex.raw(`tickets.description as "ticket_Description"`),
+                    knex.raw(`tickets.status as "ticket_Status"`),
+                    knex.raw(`tickets.severity as "ticket_Severity"`),
+                    knex.raw(`tickets.type as "ticket_Type"`),
+                    knex.raw(`tickets.date as "ticket_CreationDate"`),
+                    knex.raw(`users.name as "madeby"`))
+
+            const members = await connection('members')
+                .join('projects', { 'projects.id': 'members.project_id' })
+                .join('users', { 'members.user_id': 'users.id' })
+                .join('roles', { 'roles.id': 'members.role_id' })
+                .where('projects.id', projectId)
+                .select(
+                    knex.raw(`users.name as "member_name"`),
+                    knex.raw(`roles.name as "member_role"`))
+
+            const finalResponse = {
+                project,
+                tickets,
+                members
+            }
+
+            return res.json(finalResponse)
+        }
+        catch (err) {
+            console.log(err)
+            return res.status(500).json({ error: err })
         }
     }
 }
