@@ -90,9 +90,10 @@ module.exports = {
             const project = await connection('projects')
                 .where('projects.id', projectId)
                 .select(
-                    knex.raw(`projects.name as "project_Name"`),
-                    knex.raw(`projects.summary as "project_Summary"`),
-                    knex.raw(`projects.description as "project_Description"`))
+                    knex.raw(`projects.name as "project_name"`),
+                    knex.raw(`projects.summary as "project_summary"`),
+                    knex.raw(`projects.description as "project_description"`))
+                    .first()
 
             const tickets = await connection('tickets')
                 .join('projects', { 'tickets.project_id': 'projects.id' })
@@ -100,13 +101,13 @@ module.exports = {
                 .join('users', { 'members.user_id': 'users.id' })
                 .where('projects.id', projectId)
                 .select(
-                    knex.raw(`tickets.name as "ticket_Name"`),
-                    knex.raw(`tickets.summary as "ticket_Summary"`),
-                    knex.raw(`tickets.description as "ticket_Description"`),
-                    knex.raw(`tickets.status as "ticket_Status"`),
-                    knex.raw(`tickets.severity as "ticket_Severity"`),
-                    knex.raw(`tickets.type as "ticket_Type"`),
-                    knex.raw(`tickets.date as "ticket_CreationDate"`),
+                    knex.raw(`tickets.name as "ticket_name"`),
+                    knex.raw(`tickets.summary as "ticket_summary"`),
+                    knex.raw(`tickets.description as "ticket_description"`),
+                    knex.raw(`tickets.status as "ticket_status"`),
+                    knex.raw(`tickets.severity as "ticket_severity"`),
+                    knex.raw(`tickets.type as "ticket_type"`),
+                    knex.raw(`tickets.date as "ticket_creationdate"`),
                     knex.raw(`users.name as "madeby"`))
 
             const members = await connection('members')
