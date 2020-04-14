@@ -101,6 +101,7 @@ module.exports = {
                 .join('users', { 'members.user_id': 'users.id' })
                 .where('projects.id', projectId)
                 .select(
+                	knex.raw(`tickets.id as "ticket_id"`),
                     knex.raw(`tickets.name as "ticket_name"`),
                     knex.raw(`tickets.summary as "ticket_summary"`),
                     knex.raw(`tickets.description as "ticket_description"`),

@@ -35,6 +35,7 @@ module.exports = {
 
                         res.setHeader('x-token', token)
                         res.setHeader('x-token-refresh', refreshToken)
+                        res.json({ userId:user.id })
                         return res.status(200).send()
                     }
                     else
