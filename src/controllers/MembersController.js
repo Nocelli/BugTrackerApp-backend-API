@@ -1,8 +1,70 @@
 const connection = require('../database/connection')
 const isTheUserInTheProject = require('../utils/IsTheUserInTheProject')
+const GetUserByEmail = require('../utils/GetUserByEmail')
 const knex = require('knex')
 
 module.exports = {
+
+    async sendNotification(req, res) {
+        try {
+            const { io, users } = require('../socket').getio();
+            const projectId = req.params.projectId
+            const { userEmail, roleId } = req.body
+            const loggedUserId = res.locals.userId
+            const loggedUserRoleInProject = await isTheUserInTheProject(projectId, loggedUserId)
+            const user = await GetUserByEmail(userEmail)
+
+            //user exists
+            if(!user.id)
+                return res.status(404).json({error: `User not found`})
+            
+ 
+            //check if the user have been already invited to project
+            const notification = await connection('notification')
+            .where('user_id', user.id)
+            .where('project_id', projectId)
+            .select('notification.id')
+            .first()
+
+            if(notification)
+                return res.status(400).json({error :`User has already been invited to the project`})
+
+            //check if the user is not being added as owner
+            if (roleId === 1)
+                return res.status(400).json({error :`There can be only one owner`})
+
+            //check if project exists
+            if (loggedUserRoleInProject === undefined)
+                return res.status(404).json({error :`Project not found.`})
+
+            //check if the logged user have invite privileges in the project
+            if (loggedUserRoleInProject > 2)
+                return res.status(403).json({error :`You need to be at least an admin to add members to this project.`})
+
+            //check if the user that are being added isant already in the project
+            if (await isTheUserInTheProject(projectId, user.id))
+                return res.status(400).json({error :`User already in project.`})
+
+            await connection('notification').insert({
+                date: Math.floor(new Date().getTime() / 1000.0),
+                user_id : user.id,
+                role_id: roleId,
+                project_id: projectId
+            })
+
+            const total = await connection('notification')
+            .where('user_id', user.id)
+            .count()
+
+            io.to(users[user.id]).emit('FromAPI', total[0].count)
+            return res.status(200).json(total[0].count)
+        }
+        catch (err) {
+            console.log(err)
+            return res.status(500).json(err)
+        }
+    },
+
     async addMemberToProject(req, res) {
         try {
             const projectId = req.params.projectId

@@ -102,6 +102,16 @@ module.exports = {
         })
     }),
 
+    SendNotification: celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            userEmail: Joi.string().required().email(),
+            roleId: Joi.number().required()
+        }),
+        [Segments.PARAMS]: Joi.object().keys({
+            projectId: Joi.string().length(8).required()
+        })
+    }),
+
     AddMemberToProject: celebrate({
         [Segments.BODY]: Joi.object().keys({
             userId: Joi.string().required().length(8),

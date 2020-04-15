@@ -1,12 +1,14 @@
 const app = require('./app')
 const dotenv = require('dotenv')
+const http = require('http').createServer(app);
+const io = require('./socket').listen(http)
+
 
 dotenv.config({
     path: './.env'
 })
 
-
-app.listen(process.env.PORT, err => {
+http.listen(process.env.PORT, err => {
     if(err)
         console.log(`Error: ${err}`)
 })

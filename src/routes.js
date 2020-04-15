@@ -39,5 +39,7 @@ routers.delete('/member/:projectId', Authenticate, Validate.KickMember, Controll
 routers.put('/member/:projectId', Authenticate, Validate.ChangeRole, Controllers.Members.changeRole)
 
 
+routers.post('/invite/:projectId' ,Authenticate, Validate.SendNotification, Controllers.Members.sendNotification )
+
 
 module.exports = routers
