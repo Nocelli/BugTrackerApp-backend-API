@@ -114,11 +114,7 @@ module.exports = {
 
     AddMemberToProject: celebrate({
         [Segments.BODY]: Joi.object().keys({
-            userId: Joi.string().required().length(8),
-            roleId: Joi.number().required()
-        }),
-        [Segments.PARAMS]: Joi.object().keys({
-            projectId: Joi.string().length(8).required()
+            notificationId: Joi.required()
         })
     }),
 

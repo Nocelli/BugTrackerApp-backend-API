@@ -15,13 +15,11 @@ module.exports = {
 
         io.on('connection', async socket => {
             users[socket.userId] = socket.id
-            const { count } = await CountNotifications(socket.userId)
-            
+            const { count }  = await CountNotifications(socket.userId)
             io.to(socket.id).emit('FromAPI', count)
 
             socket.on('disconnect', function () {
                 delete users[socket.userId]
-                console.log(`user:${socket.userId} disconnected`)
               })
         })
 

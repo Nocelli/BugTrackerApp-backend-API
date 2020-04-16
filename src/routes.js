@@ -33,13 +33,13 @@ routers.get('/profile', Authenticate, Controllers.Profile.ListProjectsImIn)
 routers.get('/profile/project/:projectId', Validate.ListProjectInfo, Authenticate, Controllers.Profile.ListProjectInfo)
 routers.get('/profile/tickets/:projectId?', Authenticate, Validate.ListMyTickets, Controllers.Profile.ListMyTickets)
 
-routers.post('/member/:projectId', Authenticate, Validate.AddMemberToProject, Controllers.Members.addMemberToProject)
+routers.post('/member/accept', Authenticate, Validate.AddMemberToProject, Controllers.Members.addMemberToProject)
 routers.get('/member/:projectId', Authenticate, Validate.ListMembersOfProject, Controllers.Members.listMemberOfProject)
 routers.delete('/member/:projectId', Authenticate, Validate.KickMember, Controllers.Members.kickMember)
 routers.put('/member/:projectId', Authenticate, Validate.ChangeRole, Controllers.Members.changeRole)
 
 
 routers.post('/invite/:projectId' ,Authenticate, Validate.SendNotification, Controllers.Members.sendNotification )
-
+routers.get('/notifications' , Authenticate, Controllers.Notifications.ListUserNotifications )
 
 module.exports = routers

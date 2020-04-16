@@ -15,49 +15,50 @@ module.exports = {
             const user = await GetUserByEmail(userEmail)
 
             //user exists
-            if(!user.id)
-                return res.status(404).json({error: `User not found`})
-            
- 
+            if (!user)
+                return res.status(404).json({ error: `User not found` })
+
+
             //check if the user have been already invited to project
             const notification = await connection('notification')
-            .where('user_id', user.id)
-            .where('project_id', projectId)
-            .select('notification.id')
-            .first()
+                .where('user_id', user.id)
+                .where('project_id', projectId)
+                .select('notification.id')
+                .first()
 
-            if(notification)
-                return res.status(400).json({error :`User has already been invited to the project`})
+            if (notification)
+                return res.status(400).json({ error: `User has already been invited to the project` })
 
             //check if the user is not being added as owner
             if (roleId === 1)
-                return res.status(400).json({error :`There can be only one owner`})
+                return res.status(400).json({ error: `There can be only one owner` })
 
             //check if project exists
             if (loggedUserRoleInProject === undefined)
-                return res.status(404).json({error :`Project not found.`})
+                return res.status(404).json({ error: `Project not found.` })
 
             //check if the logged user have invite privileges in the project
             if (loggedUserRoleInProject > 2)
-                return res.status(403).json({error :`You need to be at least an admin to add members to this project.`})
+                return res.status(403).json({ error: `You need to be at least an admin to add members to this project.` })
 
             //check if the user that are being added isant already in the project
             if (await isTheUserInTheProject(projectId, user.id))
-                return res.status(400).json({error :`User already in project.`})
+                return res.status(400).json({ error: `User already in project.` })
 
             await connection('notification').insert({
                 date: Math.floor(new Date().getTime() / 1000.0),
-                user_id : user.id,
+                user_id: user.id,
                 role_id: roleId,
-                project_id: projectId
+                project_id: projectId,
+                senders_user_id: loggedUserId
             })
 
             const total = await connection('notification')
-            .where('user_id', user.id)
-            .count()
+                .where('user_id', user.id)
+                .count()
 
             io.to(users[user.id]).emit('FromAPI', total[0].count)
-            return res.status(200).json(total[0].count)
+            return res.status(200).send()
         }
         catch (err) {
             console.log(err)
@@ -67,32 +68,44 @@ module.exports = {
 
     async addMemberToProject(req, res) {
         try {
-            const projectId = req.params.projectId
-            const { userId, roleId } = req.body
-            const loggedUserId = res.locals.userId
-            const loggedUserRoleInProject = await isTheUserInTheProject(projectId, loggedUserId)
+            const { notificationId } = req.body
+            const userId = res.locals.userId
+            const notification = await connection('notification').where('notification.id', notificationId).select('*').first()
+            
+            if(!notification)
+                return res.status(400).json({ error: `Invite not valid.` })
+            
+            const projectId = notification.project_id
+            const loggedUserRoleInProject = await isTheUserInTheProject(projectId, notification.senders_user_id)
+
+            if (notification.user_id !== userId)
+                return res.status(400).json({ error: `This invite was not meant fot you.` })
 
             //check if the user is not being added as owner
-            if (roleId === 1)
-                return res.status(400).json(`There can be only one owner`)
+            if (notification.role_id === 1)
+                return res.status(400).json({ error: `There can be only one owner` })
 
             //check if project exists
             if (loggedUserRoleInProject === undefined)
-                return res.status(404).json(`Project not found.`)
+                return res.status(404).json({ error: `Project not found.` })
 
             //check if the logged user have invite privileges in the project
             if (loggedUserRoleInProject > 2)
-                return res.status(403).json(`You need to be at least an admin to add members to this project.`)
+                return res.status(403).json({ error: `You need to be at least an admin to add members to this project.` })
 
             //check if the user that are being added isant already in the project
             if (await isTheUserInTheProject(projectId, userId))
-                return res.status(400).json(`User already in project.`)
+                return res.status(400).json({ error: `User already in project.` })
 
             await connection('members').insert({
                 user_id: userId,
-                role_id: roleId,
+                role_id: notification.role_id,
                 project_id: projectId
             })
+
+            await connection('notification')
+                .where('id', notificationId)
+                .delete()
 
             return res.status(201).send()
         }
@@ -179,23 +192,23 @@ module.exports = {
 
             //check if the new role is the 'owner' role
             if (newRoleId === 1)
-                return res.status(400).json({error : `There can be only one owner`})
+                return res.status(400).json({ error: `There can be only one owner` })
 
             //check if project exists
             if (!loggedUserRoleInProject)
-                return res.status(404).json({error :`Project not found.`})
+                return res.status(404).json({ error: `Project not found.` })
 
             //check if the logged user have moderating privileges in the project
             if (loggedUserRoleInProject > 2)
-                return res.status(403).json({error :`You need to be at least an admin to change members roles.`})
+                return res.status(403).json({ error: `You need to be at least an admin to change members roles.` })
 
             //check if the user that are being changed is in the project
             if (!memberUserRoleId)
-                return res.status(400).json({error :`User not in the project.`})
+                return res.status(400).json({ error: `User not in the project.` })
 
             //check if the logged user have a higher role than the user being changed
             if (loggedUserRoleInProject > memberUserRoleId)
-                return res.status(403).json({error :`You cant change an users role with a role higher than yours.`})
+                return res.status(403).json({ error: `You cant change an users role with a role higher than yours.` })
 
             //changing role ,returns 1 if changed
             if ((
@@ -211,7 +224,7 @@ module.exports = {
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json({error : err})
+            return res.status(500).json({ error: err })
         }
     }
 }
