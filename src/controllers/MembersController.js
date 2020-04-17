@@ -68,26 +68,32 @@ module.exports = {
 
     async addMemberToProject(req, res) {
         try {
+            const inputIndex = req.params.inputIndex
             const { notificationId } = req.body
             const userId = res.locals.userId
             const notification = await connection('notification').where('notification.id', notificationId).select('*').first()
-            
-            if(!notification)
+
+            if (!notification)
                 return res.status(400).json({ error: `Invite not valid.` })
-            
+
             const projectId = notification.project_id
             const loggedUserRoleInProject = await isTheUserInTheProject(projectId, notification.senders_user_id)
 
             if (notification.user_id !== userId)
                 return res.status(400).json({ error: `This invite was not meant fot you.` })
 
-            //check if the user is not being added as owner
-            if (notification.role_id === 1)
-                return res.status(400).json({ error: `There can be only one owner` })
+            if (inputIndex === 'deny') {
+                await connection('notification').where('notification.id', notificationId).delete()
+                return res.status(200).send()
+            }
 
             //check if project exists
             if (loggedUserRoleInProject === undefined)
                 return res.status(404).json({ error: `Project not found.` })
+
+            //check if the user is not being added as owner
+            if (notification.role_id === 1)
+                return res.status(400).json({ error: `There can be only one owner` })
 
             //check if the logged user have invite privileges in the project
             if (loggedUserRoleInProject > 2)

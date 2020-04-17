@@ -1,5 +1,6 @@
 
 exports.seed = function (knex) {
+  return
   // Deletes ALL existing entries
   return knex('roles').del()
     .then(function () {
