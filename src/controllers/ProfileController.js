@@ -97,7 +97,7 @@ module.exports = {
 
             const tickets = await connection('tickets')
                 .join('projects', { 'tickets.project_id': 'projects.id' })
-                .join('members', { 'projects.id': 'members.project_id' })
+                .join('members', { 'tickets.member_id': 'members.id' })
                 .join('users', { 'members.user_id': 'users.id' })
                 .where('projects.id', projectId)
                 .select(
