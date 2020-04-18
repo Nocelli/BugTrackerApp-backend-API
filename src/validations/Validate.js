@@ -65,7 +65,8 @@ module.exports = {
 
     ChangePassword: celebrate({
         [Segments.BODY]: Joi.object().keys({
-            password: Joi.string().required().min(8).max(16)
+            password: Joi.string().required().min(8).max(16),
+            token: Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/)
         })
     }),
 

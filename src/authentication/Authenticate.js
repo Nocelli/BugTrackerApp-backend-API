@@ -4,7 +4,7 @@ const GetUserById = require('../utils/GetUserById')
 
 const AuthenticateTokens = (req, res, next) => {
     try {
-        const token = req.headers['x-token']
+        const token = req.headers['x-token'] || req.body.token
         const refreshToken = req.headers['x-token-refresh']
 
         if(!token)
