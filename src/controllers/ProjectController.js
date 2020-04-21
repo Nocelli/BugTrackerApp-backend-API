@@ -94,13 +94,14 @@ module.exports = {
                     .first()
 
                 if (!project)
-                    return res.status(404).json({error : `Project not found`})
+                    return res.status(404).json({error : `Você não pode excluir esse projeto`})
 
-
-                //delete all members
-                await connection('members').where('members.project_id', project.id).delete()
+                //delete all notifications
+                await connection('notification').where('notification.project_id', project.id).delete()
                 //delete all tickets
                 await connection('tickets').where('tickets.project_id', project.id).delete()
+                //delete all members
+                await connection('members').where('members.project_id', project.id).delete()
                 //delete project
                 await connection('projects').where('projects.id', project.id).delete()
 
