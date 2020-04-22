@@ -1,5 +1,6 @@
 const connection = require('../database/connection')
 const isTheUserInTheProject = require('../utils/IsTheUserInTheProject')
+const GetUserMemberIdInProject = require('../utils/GetUserMemberIdInProject')
 const GetUserByEmail = require('../utils/GetUserByEmail')
 const knex = require('knex')
 
@@ -151,29 +152,39 @@ module.exports = {
     async kickMember(req, res) {
         try {
             const projectId = req.params.projectId
-            const { userId } = req.body
+            const userId  = req.params.userId
             const loggedUserId = res.locals.userId
             const loggedUserRoleInProject = await isTheUserInTheProject(projectId, loggedUserId)
             const removedUserRoleId = await isTheUserInTheProject(projectId, userId)
+            const memberId = await GetUserMemberIdInProject(projectId, userId)
 
+
+            if(userId === loggedUserId && loggedUserRoleInProject === 1)
+                return res.status(400).json({error :`As the owner you cant leave the project, delete the project instead.`})
             //check if project exists
             if (!loggedUserRoleInProject)
-                return res.status(404).json(`Project not found.`)
+                return res.status(404).json({error :`Project not found.`})
 
             //check if the logged user have moderating privileges in the project
-            if (loggedUserRoleInProject > 2)
-                return res.status(403).json(`You need to be at least an admin to remove members of this project.`)
+            if (loggedUserRoleInProject > 2 && userId !== loggedUserId)
+                return res.status(403).json({error :`You need to be at least an admin to remove members of this project.`})
 
             //check if the user that are being removed is in the project
             if (!removedUserRoleId)
-                return res.status(400).json(`User not in the project.`)
+                return res.status(400).json({error :`User not in the project.`})
 
             //check if the logged user have a higher role than the user being deleted
-            if (loggedUserRoleInProject > removedUserRoleId)
-                return res.status(403).json(`You cant remove an user with a role higher than yours.`)
+            if (loggedUserRoleInProject > removedUserRoleId && userId !== loggedUserId)
+                return res.status(403).json({error :`You cant remove an user with a role higher than yours.`})
+            
+            //deleting member tickets
+            await connection('tickets')
+                .where('tickets.member_id', memberId)
+                .where('tickets.project_id', projectId)
+                .delete()
 
             //deleting member
-            await await connection('members')
+            await connection('members')
                 .join('projects', { 'members.project_id': 'projects.id' })
                 .join('users', { 'users.id': 'members.user_id' })
                 .where('members.project_id', projectId) // project exist

@@ -35,7 +35,7 @@ routers.get('/profile/tickets/:projectId?', Authenticate, Validate.ListMyTickets
 
 routers.post('/member/:inputIndex', Authenticate, Validate.AddMemberToProject, Controllers.Members.addMemberToProject)
 routers.get('/member/:projectId', Authenticate, Validate.ListMembersOfProject, Controllers.Members.listMemberOfProject)
-routers.delete('/member/:projectId', Authenticate, Validate.KickMember, Controllers.Members.kickMember)
+routers.delete('/member/:projectId/:userId', Authenticate, Validate.KickMember, Controllers.Members.kickMember)
 routers.put('/member/:projectId', Authenticate, Validate.ChangeRole, Controllers.Members.changeRole)
 
 

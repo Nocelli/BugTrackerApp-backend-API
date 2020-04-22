@@ -84,7 +84,7 @@ module.exports = {
             //check if user is in the project
             if (projectId)
                 if (!(await IsTheUserInTheProject(projectId, userId)))
-                    return res.status(401).json({ error: 'You cant see this project' })
+                    return res.status(403).json({ error: 'You cant see this project' })
 
 
             const project = await connection('projects')
@@ -117,6 +117,7 @@ module.exports = {
                 .join('roles', { 'roles.id': 'members.role_id' })
                 .where('projects.id', projectId)
                 .select(
+                    knex.raw(`users.id as "member_id"`),
                     knex.raw(`users.name as "member_name"`),
                     knex.raw(`roles.name as "member_role"`))
 

@@ -126,11 +126,9 @@ module.exports = {
     }),
 
     KickMember: celebrate({
-        [Segments.BODY]: Joi.object().keys({
-            userId: Joi.string().required().length(8)
-        }),
         [Segments.PARAMS]: Joi.object().keys({
-            projectId: Joi.string().length(8).required()
+            projectId: Joi.string().length(8).required(),
+            userId: Joi.string().required().length(8)
         })
     }),
 
